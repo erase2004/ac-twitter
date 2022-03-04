@@ -130,6 +130,27 @@ const routes = [
       }
     ]
   },
+  // 通知頁
+  {
+    path: '/notification',
+    name: 'notification',
+    beforeEnter: authorizeIsUser,
+    component: () => import('@/views/Notification')
+  },
+  // 公開聊天室
+  {
+    path: '/chatroom',
+    name: 'chatroom',
+    beforeEnter: authorizeIsUser,
+    component: () => import('@/views/Chatroom')
+  },
+  // 私人訊息
+  {
+    path: '/direct',
+    name: 'direct-message',
+    beforeEnter: authorizeIsUser,
+    component: () => import('@/views/DirectMessage')
+  },
   // 未定義路由，導回至使用者登入頁
   {
     path: '*',

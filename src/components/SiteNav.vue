@@ -36,6 +36,60 @@
         </router-link>
         <router-link
           class="nav-link link-group"
+          :to="{name: 'notification'}"
+        >
+          <icon
+            v-if="$route.name === 'notification'"
+            icon-name="notification-bell-fill"
+            icon-class="mr-20"
+          />
+          <icon
+            v-else
+            icon-name="notification-bell"
+            icon-class="mr-20"
+          />
+          <div class="link-text">
+            通知
+          </div>
+        </router-link>
+        <router-link
+          class="nav-link link-group"
+          :to="{name: 'chatroom'}"
+        >
+          <icon
+            v-if="$route.name === 'chatroom'"
+            icon-name="email-2-fill"
+            icon-class="mr-20"
+          />
+          <icon
+            v-else
+            icon-name="email-2"
+            icon-class="mr-20 icon-fix"
+          />
+          <div class="link-text">
+            公開聊天室
+          </div>
+        </router-link>
+        <router-link
+          class="nav-link link-group"
+          :to="{name: 'direct-message'}"
+        >
+          <icon
+            v-if="$route.name === 'direct-message'"
+            icon-name="email-2-fill"
+            icon-class="mr-20"
+          />
+          <icon
+            v-else
+            icon-name="email-2"
+            icon-class="mr-20 icon-fix"
+          />
+          <div class="link-text">
+            私人訊息
+          </div>
+        </router-link>
+        <router-link
+          class="nav-link link-group"
           :to="{name: 'user-setting'}"
         >
           <icon
@@ -132,6 +186,13 @@ $link-hover-opacity: 0.75;
     flex-shrink: 0;
     height: 24px;
     width: 24px;
+  }
+
+  .icon-fix {
+    height: 18px;
+    width: 20px;
+    margin-left: 2px;
+    margin-right: 22px;
   }
 }
 
