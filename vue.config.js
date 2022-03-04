@@ -7,7 +7,7 @@ module.exports = {
     config
       .plugin('html')
       .tap(args => {
-        args[0].title = 'Simple Twitter (α)'
+        args[0].title = 'Simple Twitter (β)'
         return args
       })
 
