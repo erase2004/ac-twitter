@@ -30,6 +30,7 @@
 import UserThumbnail from '@/components/UserThumbnail.vue'
 import { addPrefixFilter, emptyNameMethod } from '@/utils/mixins'
 
+/*
 const users = [
   {
     id: 1,
@@ -50,6 +51,7 @@ const users = [
     avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
   }
 ]
+*/
 
 export default {
   components: {
@@ -58,7 +60,7 @@ export default {
   mixins: [addPrefixFilter, emptyNameMethod],
   data () {
     return {
-      users
+      users: []
     }
   }
 }

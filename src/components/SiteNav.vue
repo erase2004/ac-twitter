@@ -205,6 +205,7 @@ section.site-nav {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
+  flex-shrink: 0;
   font-family: 'Noto Sans TC', serif;
   justify-content: space-between;
   width: 378px;

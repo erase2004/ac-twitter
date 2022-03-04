@@ -1,13 +1,62 @@
 <template>
   <div class="message-room">
-    <div class="room-header">
+    <section class="room-header">
       <!-- 使用slot，給上層元素可以插入客製化顯示內容的空間 -->
       <slot />
-    </div>
-    <div class="message-container">
-      <div />
-    </div>
-    <div class="control-group">
+    </section>
+    <section class="message-container">
+      <div class="mt-auto">
+        <div
+          v-for="message in proccessedMessage"
+          :key="message.id"
+          class="message-block"
+          :class="{'server-message': message.type === 0, 'self-message': message.type === 1}"
+        >
+          <!-- 伺服器發的訊息 -->
+          <div
+            v-if="message.type === 0"
+            class="message"
+          >
+            {{ serverMessage(message) }}
+          </div>
+          <!-- 自己發的訊息 -->
+          <div
+            v-else-if="message.type === 1"
+            class="self"
+          >
+            <div class="message">
+              {{ message.message }}
+            </div>
+            <div class="time">
+              {{ message.createdAt | timeFormat }}
+            </div>
+          </div>
+          <!-- 其他人發的訊息 -->
+          <div
+            v-else-if="message.type === 2"
+            class="user"
+          >
+            <div class="message-area">
+              <UserThumbnail
+                :initial-user="message.userData"
+                class="avatar"
+              />
+              <div class="message">
+                {{ message.message }}
+              </div>
+            </div>
+            <div class="time">
+              {{ message.createdAt | timeFormat }}
+            </div>
+          </div>
+          <div
+            v-else
+            class="d-none"
+          />
+        </div>
+      </div>
+    </section>
+    <section class="control-group">
       <input
         type="text"
         name="message"
@@ -17,9 +66,229 @@
         icon-name="message-send"
         class="btn-send cursor-pointer"
       />
-    </div>
+    </section>
   </div>
 </template>
+
+<script>
+import UserThumbnail from '@/components/UserThumbnail.vue'
+import { timeFormatFilter, emptyNameMethod } from '@/utils/mixins'
+import { mapState } from 'vuex'
+
+/*
+const dummyMessages = [
+  {
+    messageId: 1,
+    source: 'server',
+    userData: {
+      id: 14,
+      name: '',
+      account: 'aaaaaaaaaaaaa',
+      avatar: ''
+    },
+    createdAt: new Date(),
+    message: '',
+    action: 'join'
+  },
+  {
+    messageId: 2,
+    source: 'server',
+    userData: {
+      id: 2,
+      name: '',
+      account: 'bbbbbbbbbbbbbbbbbbbbb',
+      avatar: ''
+    },
+    createdAt: new Date(),
+    message: '',
+    action: 'leave'
+  },
+  {
+    messageId: 3,
+    source: 'user',
+    userData: {
+      id: 1,
+      name: 'aaaaaa',
+      account: 'bbbbbbb',
+      avatar: ''
+    },
+    createdAt: new Date(),
+    message: 'new message',
+    action: ''
+  },
+  {
+    messageId: 4,
+    source: 'user',
+    userData: {
+      id: 1,
+      name: 'aaaaaaaaaaa',
+      account: 'bbbbbbbbbbbbbbbbb',
+      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
+    },
+    createdAt: new Date(),
+    message: 'new message new message new message new message new message new message new message',
+    action: ''
+  },
+  {
+    messageId: 5,
+    source: 'user',
+    userData: {
+      id: 2,
+      name: 'aaaaaaaaaaa',
+      account: 'bbbbbbbbbbbbbbbbb',
+      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
+    },
+    createdAt: new Date(),
+    message: 'new message new message new message new message new message new message new message',
+    action: ''
+  },
+  {
+    messageId: 6,
+    source: 'user',
+    userData: {
+      id: 3,
+      name: 'aaaaaaaaaaaaaaaaa',
+      account: 'bbbbbbbbbbbbbbbbb',
+      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
+    },
+    createdAt: new Date(),
+    message: 'new message new message new message new message new message new message new message',
+    action: ''
+  },
+  {
+    messageId: 7,
+    source: 'user',
+    userData: {
+      id: 4,
+      name: 'aaaaaaaaaaa',
+      account: 'bbbbbbbbbbbbbbbbb',
+      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
+    },
+    createdAt: new Date(),
+    message: 'new message new message new message new message new message new message new message',
+    action: ''
+  },
+  {
+    messageId: 8,
+    source: 'user',
+    userData: {
+      id: 14,
+      name: 'aaaaaaaaaaaaaaaaaaaaaa',
+      account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
+      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
+    },
+    createdAt: new Date(),
+    message: 'new message new message new message new message new message new message new message',
+    action: ''
+  },
+  {
+    messageId: 9,
+    source: 'user',
+    userData: {
+      id: 14,
+      name: 'aaaaaaaaaaaaaaaaaaaaaa',
+      account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
+      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
+    },
+    createdAt: new Date(),
+    message: 'new message new message new message new message new message new message new message',
+    action: ''
+  },
+  {
+    messageId: 10,
+    source: 'user',
+    userData: {
+      id: 14,
+      name: 'aaaaaaaaaaaaaaaaaaaaaa',
+      account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
+      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
+    },
+    createdAt: new Date(),
+    message: 'new message new message new message new message new message new message new message',
+    action: ''
+  },
+  {
+    messageId: 11,
+    source: 'user',
+    userData: {
+      id: 13,
+      name: 'aaaaaaaaaaaaaaaaaaaaaa',
+      account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
+      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
+    },
+    createdAt: new Date(),
+    message: 'new message new message new message new message new message new message new message',
+    action: ''
+  },
+  {
+    messageId: 12,
+    source: 'user',
+    userData: {
+      id: 15,
+      name: 'aaaaaaaaaaaaaaaaaaaaaa',
+      account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
+      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
+    },
+    createdAt: new Date(),
+    message: 'new message new message new message new message new message new message new message',
+    action: ''
+  }
+]
+*/
+
+export default {
+  components: {
+    UserThumbnail
+  },
+  mixins: [timeFormatFilter, emptyNameMethod],
+  data () {
+    return {
+      messages: []
+    }
+  },
+  computed: {
+    ...mapState(['currentUser']),
+    proccessedMessage () {
+      return this.messages.map(message => {
+        if (message.source === 'server') {
+          // 伺服器發的訊息
+          return {
+            ...message,
+            type: 0
+          }
+        }
+
+        if (message.userData.id === this.currentUser.id) {
+          // 自己發的訊息
+          return {
+            ...message,
+            type: 1
+          }
+        }
+
+        // 別人發的訊息
+        return {
+          ...message,
+          type: 2
+        }
+      })
+    }
+  },
+  methods: {
+    serverMessage (message) {
+      const userName = this.emptyName(message.userData.name, message.userData.account)
+
+      if (message.action === 'join') {
+        return `${userName} 上線`
+      } else if (message.action === 'leave') {
+        return `${userName} 離線`
+      } else {
+        return ''
+      }
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 .message-room {
@@ -42,8 +311,110 @@
   flex-direction: column;
   flex-wrap: nowrap;
   flex-grow: 1;
+  justify-content: flex-end;
   overflow-x: clip;
   overflow-y: auto;
+  padding: 16px;
+}
+
+.message-block {
+  // 伺服器發的訊息
+  &.server-message {
+    margin-bottom: 16px;
+    text-align: center;
+    .message {
+      display: inline-block;
+      color: #657786;
+      background-color: #E5E5E5;
+      border-radius: 50px;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 15px;
+      padding: 7px 14px;
+    }
+  }
+
+  // 自己發的訊息
+  &.self-message {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    margin-top: 20px;
+
+    .self {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+
+      .message {
+        max-width: 400px;
+        background-color: #FF6600;
+        color: #FFFFFF;
+        font-weight: normal;
+        font-size: 15px;
+        line-height: 20px;
+        border-radius: 25px 25px 0px 25px;
+        padding: 10px 15px 15px 15px;
+      }
+
+      .time {
+        color: #657786;
+        font-weight: normal;
+        font-size: 13px;
+        line-height: 13px;
+        margin-left: 50px;
+        margin-top: 2px;
+        align-self: flex-end;
+      }
+    }
+  }
+
+  // 別人發的訊息
+  .user {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    margin-bottom: 20px;
+
+    .message-area {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      max-width: 415px;
+
+      .avatar {
+        align-self: flex-end;
+        margin-right: 10px;
+      }
+
+      .message {
+        background-color: #E6ECF0;
+        color: #1C1C1C;
+        border-radius: 25px 25px 25px 0px;
+        font-weight: normal;
+        font-size: 15px;
+        line-height: 20px;
+        padding: 10px 15px 15px 15px;
+      }
+    }
+
+    .time {
+      color: #657786;
+      font-weight: normal;
+      font-size: 13px;
+      line-height: 13px;
+      margin-left: 50px;
+      margin-top: 2px;
+    }
+  }
+}
+
+// 改寫UserThumbnail樣式
+::v-deep .photo-container {
+  height: 40px;
+  width: 40px;
+  clip-path: circle(20px at center);
 }
 
 .control-group {
