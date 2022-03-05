@@ -4,7 +4,7 @@
     <ListNav>
       <!-- 清單標題標題 -->
       <template v-slot:header>
-        上線使用者()
+        上線使用者({{ users.length }})
       </template>
 
       <!-- 使用者清單 -->
@@ -45,27 +45,6 @@ import ListNav from '@/components/ListNav.vue'
 import MessageRoom from '@/components/MessageRoom.vue'
 import { addPrefixFilter, emptyNameMethod } from '@/utils/mixins'
 
-const users = [
-  {
-    id: 1,
-    account: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-    name: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
-    avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
-  },
-  {
-    id: 2,
-    account: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
-    name: '',
-    avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
-  },
-  {
-    id: 3,
-    account: 'cccccccccccccccccccccccccccccccccccccccc',
-    name: '',
-    avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
-  }
-]
-
 export default {
   components: {
     SiteNav,
@@ -74,9 +53,17 @@ export default {
     UserThumbnail
   },
   mixins: [addPrefixFilter, emptyNameMethod],
+  sockets: {
+    // 來自WebSocket的線上使用者清單更新
+    userListUpdate (resp) {
+      console.log('user list update')
+      console.log(resp)
+      this.users = [...resp.onlineUsers]
+    }
+  },
   data () {
     return {
-      users
+      users: []
     }
   }
 }

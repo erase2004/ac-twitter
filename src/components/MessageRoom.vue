@@ -83,167 +83,6 @@ import { Toast } from '@/utils/helpers'
 import { timeFormatFilter, emptyNameMethod, inputValidationMethod } from '@/utils/mixins'
 import { mapState } from 'vuex'
 
-/*
-const dummyMessages = [
-  {
-    messageId: 1,
-    source: 'server',
-    User: {
-      id: 14,
-      name: '',
-      account: 'aaaaaaaaaaaaa',
-      avatar: ''
-    },
-    createdAt: new Date(),
-    message: '',
-    action: 'join'
-  },
-  {
-    messageId: 2,
-    source: 'server',
-    User: {
-      id: 2,
-      name: '',
-      account: 'bbbbbbbbbbbbbbbbbbbbb',
-      avatar: ''
-    },
-    createdAt: new Date(),
-    message: '',
-    action: 'leave'
-  },
-  {
-    messageId: 3,
-    source: 'user',
-    User: {
-      id: 1,
-      name: 'aaaaaa',
-      account: 'bbbbbbb',
-      avatar: ''
-    },
-    createdAt: new Date(),
-    message: 'new message',
-    action: ''
-  },
-  {
-    messageId: 4,
-    source: 'user',
-    User: {
-      id: 1,
-      name: 'aaaaaaaaaaa',
-      account: 'bbbbbbbbbbbbbbbbb',
-      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
-    },
-    createdAt: new Date(),
-    message: 'new message new message new message new message new message new message new message',
-    action: ''
-  },
-  {
-    messageId: 5,
-    source: 'user',
-    User: {
-      id: 2,
-      name: 'aaaaaaaaaaa',
-      account: 'bbbbbbbbbbbbbbbbb',
-      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
-    },
-    createdAt: new Date(),
-    message: 'new message new message new message new message new message new message new message',
-    action: ''
-  },
-  {
-    messageId: 6,
-    source: 'user',
-    User: {
-      id: 3,
-      name: 'aaaaaaaaaaaaaaaaa',
-      account: 'bbbbbbbbbbbbbbbbb',
-      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
-    },
-    createdAt: new Date(),
-    message: 'new message new message new message new message new message new message new message',
-    action: ''
-  },
-  {
-    messageId: 7,
-    source: 'user',
-    User: {
-      id: 4,
-      name: 'aaaaaaaaaaa',
-      account: 'bbbbbbbbbbbbbbbbb',
-      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
-    },
-    createdAt: new Date(),
-    message: 'new message new message new message new message new message new message new message',
-    action: ''
-  },
-  {
-    messageId: 8,
-    source: 'user',
-    User: {
-      id: 14,
-      name: 'aaaaaaaaaaaaaaaaaaaaaa',
-      account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
-      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
-    },
-    createdAt: new Date(),
-    message: 'new message new message new message new message new message new message new message',
-    action: ''
-  },
-  {
-    messageId: 9,
-    source: 'user',
-    User: {
-      id: 14,
-      name: 'aaaaaaaaaaaaaaaaaaaaaa',
-      account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
-      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
-    },
-    createdAt: new Date(),
-    message: 'new message new message new message new message new message new message new message',
-    action: ''
-  },
-  {
-    messageId: 10,
-    source: 'user',
-    User: {
-      id: 14,
-      name: 'aaaaaaaaaaaaaaaaaaaaaa',
-      account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
-      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
-    },
-    createdAt: new Date(),
-    message: 'new message new message new message new message new message new message new message',
-    action: ''
-  },
-  {
-    messageId: 11,
-    source: 'user',
-    User: {
-      id: 13,
-      name: 'aaaaaaaaaaaaaaaaaaaaaa',
-      account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
-      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
-    },
-    createdAt: new Date(),
-    message: 'new message new message new message new message new message new message new message',
-    action: ''
-  },
-  {
-    messageId: 12,
-    source: 'user',
-    User: {
-      id: 15,
-      name: 'aaaaaaaaaaaaaaaaaaaaaa',
-      account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
-      avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057'
-    },
-    createdAt: new Date(),
-    message: 'new message new message new message new message new message new message new message',
-    action: ''
-  }
-]
-*/
-
 export default {
   components: {
     UserThumbnail
@@ -257,19 +96,22 @@ export default {
     }
   },
   sockets: {
+    // WebSocket登入成功
     loginSuccess (resp) {
       console.log('login success')
       console.log(resp)
       this.isLoading = false
       this.messages = [...resp.messageData]
     },
-    message (resp) {
-      this.messages = [...this.messages, resp]
-    },
+    // WebSocket斷線
     disconnect (resp) {
-      console.log('disconnect')
+      console.log('socket disconnected')
       console.log(resp)
       this.isLoading = true
+    },
+    // 來自WebSocket的新訊息
+    message (resp) {
+      this.messages = [...this.messages, resp]
     }
   },
   computed: {
@@ -314,10 +156,9 @@ export default {
   },
   watch: {
     proccessedMessage () {
-      console.log('new message')
       this.$nextTick(function () {
         var container = this.$refs.chatroom
-        container.scrollTop = container.scrollHeight + 120
+        container.scrollTop = container.scrollHeight
       })
     }
   },
