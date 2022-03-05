@@ -178,7 +178,7 @@ export default {
 
       if (message.message === 'join') {
         return `${userName} 上線`
-      } else if (message.message === 'leave') {
+      } else if (message.message === 'logout') {
         return `${userName} 離線`
       } else {
         return ''
