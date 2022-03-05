@@ -164,6 +164,7 @@ export default {
   },
   mounted () {
     // 在component掛載後，對WebSocket進行登入
+    window.addEventListener('beforeunload', this.handler)
     this.$socket.client.emit('login', { userId: this.currentUser.id })
   },
   beforeDestroy () {
@@ -203,6 +204,10 @@ export default {
       })
 
       this.inputMessage = ''
+    },
+    handler () {
+      this.$socket.client.emit('logout', { userId: this.currentUser.id })
+      console.log('refresh website')
     }
   }
 }
