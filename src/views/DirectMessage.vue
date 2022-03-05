@@ -2,22 +2,28 @@
   <div class="page-container">
     <SiteNav />
     <ListNav>
+      <!-- 清單標題標題 -->
       <template v-slot:header>
         訊息
       </template>
+
+      <!-- 使用者清單 -->
       <template v-slot:list>
         <div
           class="list-container"
         >
+          <!-- router-link v-slot: https://router.vuejs.org/api/#router-link-s-v-slot，
+               客製化router-link (可以用tag attribute，但未來會被遺棄，建議是用custom v-slot) -->
           <router-link
             v-for="user in users"
             :key="user.id"
-            v-slot="{ navigate }"
+            v-slot="{ navigate, isExactActive }"
             custom
             :to="{name: 'direct-message-room', params: {id: user.id}}"
           >
             <div
               class="list-group cursor-pointer"
+              :class="{'active': isExactActive}"
               @click="navigate"
             >
               <UserThumbnail
@@ -46,6 +52,7 @@
       </template>
     </ListNav>
     <router-view>
+      <!-- 聊天室標題 -->
       <span class="user">
         <div class="name">UserName</div>
         <div class="account">@UserAccount</div>
@@ -121,6 +128,7 @@ export default {
   }
 }
 
+// 使用者清單
 .list-group {
   align-items: center;
   border-bottom: 1px solid #E6ECF0;

@@ -1,7 +1,7 @@
 <template>
   <div class="message-room">
     <section class="room-header">
-      <!-- 使用slot，給上層元素可以插入客製化顯示內容的空間 -->
+      <!-- 使用slot，給上層元素可以插入客製化顯示標題內容 -->
       <slot />
     </section>
     <section class="message-container">
@@ -56,6 +56,7 @@
         </div>
       </div>
     </section>
+    <!-- 輸入框與訊息送出按鈕 -->
     <section class="control-group">
       <input
         type="text"
@@ -417,6 +418,7 @@ export default {
   clip-path: circle(20px at center);
 }
 
+// 輸入框與訊息送出按鈕
 .control-group {
   height: 64px;
   padding: 16px;

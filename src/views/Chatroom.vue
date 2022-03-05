@@ -2,9 +2,12 @@
   <div class="page-container">
     <SiteNav />
     <ListNav>
+      <!-- 清單標題標題 -->
       <template v-slot:header>
         上線使用者()
       </template>
+
+      <!-- 使用者清單 -->
       <template v-slot:list>
         <div
           class="list-container"
@@ -90,6 +93,7 @@ export default {
   margin-left: 23px;
 }
 
+// 使用者清單
 .list-group {
   align-items: center;
   border-bottom: 1px solid #E6ECF0;

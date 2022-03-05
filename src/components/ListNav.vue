@@ -1,9 +1,11 @@
 <template>
   <section class="user-list">
     <div class="list-header">
+      <!-- 使用slot，給上層元素可以插入客製化顯示標題內容 -->
       <slot name="header" />
     </div>
     <div class="list-body">
+      <!-- 使用slot，給上層元素可以插入客製化顯示清單內容 -->
       <slot name="list" />
     </div>
   </section>
