@@ -146,10 +146,17 @@ const routes = [
   },
   // 私人訊息
   {
-    path: '/direct',
+    path: '/direct/:id?',
     name: 'direct-message',
     beforeEnter: authorizeIsUser,
-    component: () => import('@/views/DirectMessage')
+    component: () => import('@/views/DirectMessage'),
+    children: [
+      {
+        path: '',
+        name: 'direct-message-room',
+        component: () => import('@/components/MessageRoom')
+      }
+    ]
   },
   // 未定義路由，導回至使用者登入頁
   {

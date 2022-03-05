@@ -9,42 +9,48 @@
         <div
           class="list-container"
         >
-          <div
+          <router-link
             v-for="user in users"
             :key="user.id"
-            class="list-group"
+            v-slot="{ navigate }"
+            custom
+            :to="{name: 'direct-message-room', params: {id: user.id}}"
           >
-            <UserThumbnail
-              :initial-user="user"
-              class="avatar"
-            />
-            <div class="user-info">
-              <div class="user">
-                <div class="name">
-                  {{ emptyName(user.name, user.account) }}
+            <div
+              class="list-group cursor-pointer"
+              @click="navigate"
+            >
+              <UserThumbnail
+                :initial-user="user"
+                class="avatar"
+              />
+              <div class="user-info">
+                <div class="user">
+                  <div class="name">
+                    {{ emptyName(user.name, user.account) }}
+                  </div>
+                  <div class="account">
+                    {{ user.account | addPrefix }}
+                  </div>
                 </div>
-                <div class="account">
-                  {{ user.account | addPrefix }}
+                <div class="introduction">
+                  {{ user.introduction }}
                 </div>
               </div>
-              <div class="introduction">
-                {{ user.introduction }}
+              <div class="last-modified">
+                {{ user.lastModified | timeFormat }}
               </div>
             </div>
-            <div class="last-modified">
-              {{ user.lastModified | timeFormat }}
-            </div>
-          </div>
+          </router-link>
         </div>
       </template>
     </ListNav>
-    <MessageRoom>
-      <!-- 私人訊息 -->
+    <router-view>
       <span class="user">
         <div class="name">UserName</div>
         <div class="account">@UserAccount</div>
       </span>
-    </MessageRoom>
+    </router-view>
   </div>
 </template>
 
@@ -52,7 +58,6 @@
 import UserThumbnail from '@/components/UserThumbnail.vue'
 import SiteNav from '@/components/SiteNav.vue'
 import ListNav from '@/components/ListNav.vue'
-import MessageRoom from '@/components/MessageRoom.vue'
 import { addPrefixFilter, emptyNameMethod, timeFormatFilter } from '@/utils/mixins'
 
 const users = [
@@ -86,7 +91,6 @@ export default {
   components: {
     SiteNav,
     ListNav,
-    MessageRoom,
     UserThumbnail
   },
   mixins: [addPrefixFilter, emptyNameMethod, timeFormatFilter],
