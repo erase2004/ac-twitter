@@ -41,7 +41,7 @@
           >
             <div class="message-area">
               <UserThumbnail
-                :initial-user="message.User"
+                :initial-user="message.userData"
                 class="avatar"
               />
               <div class="message">
@@ -138,7 +138,7 @@ export default {
           }
         }
 
-        if (message.User.id === this.currentUser.id) {
+        if (message.userData.id === this.currentUser.id) {
           // 自己發的訊息
           return {
             ...message,
@@ -166,11 +166,15 @@ export default {
     // 在component掛載後，對WebSocket進行登入
     this.$socket.client.emit('login', { userId: this.currentUser.id })
   },
+  beforeDestroy () {
+    console.log('before destory')
+    this.$socket.client.emit('logout', { userId: this.currentUser.id })
+  },
   methods: {
     serverMessage (message) {
       console.log(message)
 
-      const userName = (message.User) ? this.emptyName(message.User.name, message.User.account) : this.emptyName(message.userData.name, message.userData.account)
+      const userName = (message.userData) ? this.emptyName(message.userData.name, message.userData.account) : this.emptyName(message.userData.name, message.userData.account)
 
       if (message.message === 'join') {
         return `${userName} 上線`
