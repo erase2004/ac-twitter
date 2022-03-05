@@ -13,8 +13,8 @@ import { io } from 'socket.io-client'
 // 打算用在呼叫發推、回覆、編輯使用者Profile這類跳出對話框上
 import PortalVue from 'portal-vue'
 
-const socket = io('http://localhost:3000')
-// const socket = io('https://rocky-shelf-75930.herokuapp.com')
+// const socket = io('http://localhost:3000')
+const socket = io('https://rocky-shelf-75930.herokuapp.com')
 
 Vue.use(VueSocketIOExt, socket, { store })
 Vue.use(PortalVue)
