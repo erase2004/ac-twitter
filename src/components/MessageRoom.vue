@@ -4,7 +4,10 @@
       <!-- 使用slot，給上層元素可以插入客製化顯示標題內容 -->
       <slot />
     </section>
-    <section class="message-container">
+    <section
+      ref="chatroom"
+      class="message-container"
+    >
       <div class="mt-auto">
         <div
           v-for="message in proccessedMessage"
@@ -28,7 +31,7 @@
               {{ message.message }}
             </div>
             <div class="time">
-              {{ message.createdAt | timeFormat }}
+              {{ message.created_at | timeFormat }}
             </div>
           </div>
           <!-- 其他人發的訊息 -->
@@ -38,7 +41,7 @@
           >
             <div class="message-area">
               <UserThumbnail
-                :initial-user="message.userData"
+                :initial-user="message.User"
                 class="avatar"
               />
               <div class="message">
@@ -46,7 +49,7 @@
               </div>
             </div>
             <div class="time">
-              {{ message.createdAt | timeFormat }}
+              {{ message.created_at | timeFormat }}
             </div>
           </div>
           <div
@@ -59,6 +62,7 @@
     <!-- 輸入框與訊息送出按鈕 -->
     <section class="control-group">
       <input
+        v-model.lazy.trim="inputMessage"
         type="text"
         name="message"
         placeholder="輸入訊息..."
@@ -66,6 +70,8 @@
       <icon
         icon-name="message-send"
         class="btn-send cursor-pointer"
+        :disabled="isLoading"
+        @click.native.stop.prevent="sendMessage"
       />
     </section>
   </div>
@@ -73,7 +79,8 @@
 
 <script>
 import UserThumbnail from '@/components/UserThumbnail.vue'
-import { timeFormatFilter, emptyNameMethod } from '@/utils/mixins'
+import { Toast } from '@/utils/helpers'
+import { timeFormatFilter, emptyNameMethod, inputValidationMethod } from '@/utils/mixins'
 import { mapState } from 'vuex'
 
 /*
@@ -81,7 +88,7 @@ const dummyMessages = [
   {
     messageId: 1,
     source: 'server',
-    userData: {
+    User: {
       id: 14,
       name: '',
       account: 'aaaaaaaaaaaaa',
@@ -94,7 +101,7 @@ const dummyMessages = [
   {
     messageId: 2,
     source: 'server',
-    userData: {
+    User: {
       id: 2,
       name: '',
       account: 'bbbbbbbbbbbbbbbbbbbbb',
@@ -107,7 +114,7 @@ const dummyMessages = [
   {
     messageId: 3,
     source: 'user',
-    userData: {
+    User: {
       id: 1,
       name: 'aaaaaa',
       account: 'bbbbbbb',
@@ -120,7 +127,7 @@ const dummyMessages = [
   {
     messageId: 4,
     source: 'user',
-    userData: {
+    User: {
       id: 1,
       name: 'aaaaaaaaaaa',
       account: 'bbbbbbbbbbbbbbbbb',
@@ -133,7 +140,7 @@ const dummyMessages = [
   {
     messageId: 5,
     source: 'user',
-    userData: {
+    User: {
       id: 2,
       name: 'aaaaaaaaaaa',
       account: 'bbbbbbbbbbbbbbbbb',
@@ -146,7 +153,7 @@ const dummyMessages = [
   {
     messageId: 6,
     source: 'user',
-    userData: {
+    User: {
       id: 3,
       name: 'aaaaaaaaaaaaaaaaa',
       account: 'bbbbbbbbbbbbbbbbb',
@@ -159,7 +166,7 @@ const dummyMessages = [
   {
     messageId: 7,
     source: 'user',
-    userData: {
+    User: {
       id: 4,
       name: 'aaaaaaaaaaa',
       account: 'bbbbbbbbbbbbbbbbb',
@@ -172,7 +179,7 @@ const dummyMessages = [
   {
     messageId: 8,
     source: 'user',
-    userData: {
+    User: {
       id: 14,
       name: 'aaaaaaaaaaaaaaaaaaaaaa',
       account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
@@ -185,7 +192,7 @@ const dummyMessages = [
   {
     messageId: 9,
     source: 'user',
-    userData: {
+    User: {
       id: 14,
       name: 'aaaaaaaaaaaaaaaaaaaaaa',
       account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
@@ -198,7 +205,7 @@ const dummyMessages = [
   {
     messageId: 10,
     source: 'user',
-    userData: {
+    User: {
       id: 14,
       name: 'aaaaaaaaaaaaaaaaaaaaaa',
       account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
@@ -211,7 +218,7 @@ const dummyMessages = [
   {
     messageId: 11,
     source: 'user',
-    userData: {
+    User: {
       id: 13,
       name: 'aaaaaaaaaaaaaaaaaaaaaa',
       account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
@@ -224,7 +231,7 @@ const dummyMessages = [
   {
     messageId: 12,
     source: 'user',
-    userData: {
+    User: {
       id: 15,
       name: 'aaaaaaaaaaaaaaaaaaaaaa',
       account: 'bbbbbbbbbbbbbbbbbbbbbbbbb',
@@ -241,22 +248,46 @@ export default {
   components: {
     UserThumbnail
   },
-  mixins: [timeFormatFilter, emptyNameMethod],
+  mixins: [timeFormatFilter, emptyNameMethod, inputValidationMethod],
   data () {
     return {
-      messages: []
+      messages: [],
+      inputMessage: '',
+      isLoading: true
     }
   },
   sockets: {
     loginSuccess (resp) {
       console.log('login success')
       console.log(resp)
+      this.isLoading = false
+      this.messages = [...resp.messageData]
+    },
+    message (resp) {
+      this.messages = [...this.messages, resp]
+    },
+    disconnect (resp) {
+      console.log('disconnect')
+      console.log(resp)
+      this.isLoading = true
     }
   },
   computed: {
     ...mapState(['currentUser']),
     proccessedMessage () {
-      return this.messages.map(message => {
+      // 過濾掉重複id的message
+
+      const idSet = new Set()
+      const messages = this.messages.filter(message => {
+        if (idSet.has(message.id)) {
+          return false
+        } else {
+          idSet.add(message.id)
+          return true
+        }
+      })
+
+      return messages.map(message => {
         if (message.source === 'server') {
           // 伺服器發的訊息
           return {
@@ -265,7 +296,7 @@ export default {
           }
         }
 
-        if (message.userData.id === this.currentUser.id) {
+        if (message.User.id === this.currentUser.id) {
           // 自己發的訊息
           return {
             ...message,
@@ -281,21 +312,52 @@ export default {
       })
     }
   },
+  watch: {
+    proccessedMessage () {
+      console.log('new message')
+      this.$nextTick(function () {
+        var container = this.$refs.chatroom
+        container.scrollTop = container.scrollHeight + 120
+      })
+    }
+  },
   mounted () {
     // 在component掛載後，對WebSocket進行登入
     this.$socket.client.emit('login', { userId: this.currentUser.id })
   },
   methods: {
     serverMessage (message) {
-      const userName = this.emptyName(message.userData.name, message.userData.account)
+      console.log(message)
 
-      if (message.action === 'join') {
+      const userName = (message.User) ? this.emptyName(message.User.name, message.User.account) : this.emptyName(message.userData.name, message.userData.account)
+
+      if (message.message === 'join') {
         return `${userName} 上線`
-      } else if (message.action === 'leave') {
+      } else if (message.message === 'leave') {
         return `${userName} 離線`
       } else {
         return ''
       }
+    },
+    sendMessage () {
+      if (this.isLoading) return
+
+      const { status, message } = this.checkInstantMessage(this.inputMessage)
+
+      if (status === false) {
+        return Toast.fire({
+          icon: 'warning',
+          title: message
+        })
+      }
+
+      this.$socket.client.emit('message', {
+        source: 'user',
+        userId: this.currentUser.id,
+        message: this.inputMessage
+      })
+
+      this.inputMessage = ''
     }
   }
 }
@@ -313,6 +375,7 @@ export default {
   height: 74px;
   flex-direction: row;
   flex-wrap: nowrap;
+  flex-shrink: 0;
   align-items: center;
   border: 1px solid #E6ECF0;
 }
@@ -322,7 +385,6 @@ export default {
   flex-direction: column;
   flex-wrap: nowrap;
   flex-grow: 1;
-  justify-content: flex-end;
   overflow-x: clip;
   overflow-y: auto;
   padding: 16px;

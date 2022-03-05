@@ -168,6 +168,34 @@ export const inputValidationMethod = {
       }
 
       return result
+    },
+    // 聊天訊息規則：長度不超過65535（資料庫TEXT資料格式限制）
+    checkInstantMessage (message) {
+      let result
+
+      result = typeCheck({ input: message, typeRef: '' })
+      if (result.status === false) {
+        return result
+      }
+
+      result = {
+        status: true,
+        message: ''
+      }
+
+      if (message.length === 0) {
+        result.status = false
+        result.message = '內容不可空白'
+        return result
+      }
+
+      if (message.length > 65535) {
+        result.status = false
+        result.message = '字數不可超過65535字'
+        return result
+      }
+
+      return result
     }
   }
 }
