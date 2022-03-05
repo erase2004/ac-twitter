@@ -247,6 +247,12 @@ export default {
       messages: []
     }
   },
+  sockets: {
+    loginSuccess (resp) {
+      console.log('login success')
+      console.log(resp)
+    }
+  },
   computed: {
     ...mapState(['currentUser']),
     proccessedMessage () {
@@ -274,6 +280,10 @@ export default {
         }
       })
     }
+  },
+  mounted () {
+    // 在component掛載後，對WebSocket進行登入
+    this.$socket.client.emit('login', { userId: this.currentUser.id })
   },
   methods: {
     serverMessage (message) {
