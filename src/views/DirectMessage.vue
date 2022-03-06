@@ -12,6 +12,41 @@
         <div class="list-container">
           <!-- router-link v-slot: https://router.vuejs.org/api/#router-link-s-v-slot，
                客製化router-link (可以用tag attribute，但未來會被遺棄，建議是用custom v-slot) -->
+          <!-- 點嚇得當下聊天者 -->
+          <router-link
+            v-slot="{ navigate, isExactActive }"
+            custom
+            :to="{ name: 'direct-message-room', params: { id: chatUser.id } }"
+          >
+            <div
+              class="list-group cursor-pointer"
+              :class="{ active: isExactActive }"
+              @click="navigate"
+            >
+              <UserThumbnail
+                :initial-user="chatUser"
+                class="avatar"
+              />
+              <div class="user-info">
+                <!-- 控制當前聊天室使用者顯示 -->
+                <div class="user">
+                  <div class="name">
+                    {{ emptyName(chatUser.name, chatUser.account) }}
+                  </div>
+                  <div class="account">
+                    {{ chatUser.account | addPrefix }}
+                  </div>
+                </div>
+                <div class="introduction">
+                  {{ chatUser.introduction }}
+                </div>
+              </div>
+              <div class="last-modified">
+                {{ chatUser.lastModified | timeFormat }}
+              </div>
+            </div>
+          </router-link>
+          <!-- 其餘使用者 -->
           <router-link
             v-for="user in users"
             :key="user.id"
@@ -21,17 +56,14 @@
           >
             <div
               class="list-group cursor-pointer"
-              :class="{'active': isExactActive}"
+              :class="{ active: isExactActive }"
               @click="navigate"
             >
               <UserThumbnail
                 :initial-user="user"
                 class="avatar"
               />
-              <div
-                class="user-info"
-                @click="tempUser = user"
-              >
+              <div class="user-info">
                 <!-- 控制當前聊天室使用者顯示 -->
                 <div class="user">
                   <div class="name">
@@ -56,8 +88,8 @@
     <router-view>
       <!-- 聊天室標題 -->
       <span class="user">
-        <div class="name">{{ emptyName(tempUser.name, tempUser.account) }}</div>
-        <div class="account">{{ tempUser.account | addPrefix }}</div>
+        <div class="name">{{ emptyName(chatUser.name, chatUser.account) }}</div>
+        <div class="account">{{ chatUser.account | addPrefix }}</div>
       </span>
     </router-view>
   </div>
@@ -112,14 +144,18 @@ export default {
   data () {
     return {
       users: [],
-      tempUser: {}
+      chatUser: {}
     }
   },
   sockets: {
     // 來自WebSocket的新訊息
     userList (resp) {
-      console.log(resp)
-      this.users = resp
+      console.log('userList', resp)
+      this.users = resp.filter(item => item)
+    },
+    listenUserData (resp) {
+      console.log('listenUserData', resp)
+      this.chatUser = resp
     }
   }
 }
