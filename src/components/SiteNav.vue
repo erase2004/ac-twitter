@@ -73,6 +73,7 @@
         <router-link
           class="nav-link link-group"
           :to="{name: 'direct-message'}"
+          @click.native="submitId (user)"
         >
           <icon
             v-if="$route.name === 'direct-message'"
@@ -156,6 +157,12 @@ export default {
     },
     closeModal () {
       this.show = false
+    },
+    submitId (user) {
+      this.$socket.client.emit('createRoom', {
+        sendUserId: this.currentUser.id
+      })
+      console.log('current:', this.currentUser.id)
     }
   }
 }

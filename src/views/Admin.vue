@@ -71,21 +71,21 @@ import authorizationApi from '@/apis/authorization'
 import { Toast } from '@/utils/helpers'
 
 export default {
-  data() {
+  data () {
     return {
       account: '',
       password: '',
-      isProcessing: false,
+      isProcessing: false
     }
   },
   methods: {
-    async handleSubmit() {
+    async handleSubmit () {
       try {
         // 沒有輸入帳號或是密碼
         if (!this.account || !this.password) {
           Toast.fire({
             icon: 'warning',
-            title: '請填入帳號和密碼',
+            title: '請填入帳號和密碼'
           })
           return
         }
@@ -93,7 +93,7 @@ export default {
         this.isProcessing = true
         const { data } = await authorizationApi.adminSignIn({
           account: this.account,
-          password: this.password,
+          password: this.password
         })
 
         if (data.status === 'error') {
@@ -114,13 +114,13 @@ export default {
         console.error(error)
         Toast.fire({
           icon: 'error',
-          title: error.message,
+          title: error.message
         })
       } finally {
         this.isProcessing = false
       }
-    },
-  },
+    }
+  }
 }
 </script>
 

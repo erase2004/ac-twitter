@@ -13,7 +13,10 @@
           v-for="message in proccessedMessage"
           :key="message.id"
           class="message-block"
-          :class="{'server-message': message.type === 0, 'self-message': message.type === 1}"
+          :class="{
+            'server-message': message.type === 0,
+            'self-message': message.type === 1
+          }"
         >
           <!-- 伺服器發的訊息 -->
           <div
@@ -80,7 +83,11 @@
 <script>
 import UserThumbnail from '@/components/UserThumbnail.vue'
 import { Toast } from '@/utils/helpers'
-import { timeFormatFilter, emptyNameMethod, inputValidationMethod } from '@/utils/mixins'
+import {
+  timeFormatFilter,
+  emptyNameMethod,
+  inputValidationMethod
+} from '@/utils/mixins'
 import { mapState } from 'vuex'
 
 export default {
@@ -120,7 +127,7 @@ export default {
       // 過濾掉重複id的message
 
       const idSet = new Set()
-      const messages = this.messages.filter(message => {
+      const messages = this.messages.filter((message) => {
         if (idSet.has(message.id)) {
           return false
         } else {
@@ -129,7 +136,7 @@ export default {
         }
       })
 
-      return messages.map(message => {
+      return messages.map((message) => {
         if (message.source === 'server') {
           // 伺服器發的訊息
           return {
@@ -174,7 +181,9 @@ export default {
     serverMessage (message) {
       console.log(message)
 
-      const userName = (message.userData) ? this.emptyName(message.userData.name, message.userData.account) : this.emptyName(message.userData.name, message.userData.account)
+      const userName = message.userData
+        ? this.emptyName(message.userData.name, message.userData.account)
+        : this.emptyName(message.userData.name, message.userData.account)
 
       if (message.message === 'join') {
         return `${userName} 上線`
@@ -226,7 +235,7 @@ export default {
   flex-wrap: nowrap;
   flex-shrink: 0;
   align-items: center;
-  border: 1px solid #E6ECF0;
+  border: 1px solid #e6ecf0;
 }
 
 .message-container {
@@ -247,7 +256,7 @@ export default {
     .message {
       display: inline-block;
       color: #657786;
-      background-color: #E5E5E5;
+      background-color: #e5e5e5;
       border-radius: 50px;
       font-weight: 500;
       font-size: 15px;
@@ -271,13 +280,15 @@ export default {
 
       .message {
         max-width: 400px;
-        background-color: #FF6600;
-        color: #FFFFFF;
+        background-color: #ff6600;
+        color: #ffffff;
         font-weight: normal;
         font-size: 15px;
         line-height: 20px;
         border-radius: 25px 25px 0px 25px;
         padding: 10px 15px 15px 15px;
+        overflow-y: auto;
+        word-wrap: break-word;
       }
 
       .time {
@@ -311,13 +322,15 @@ export default {
       }
 
       .message {
-        background-color: #E6ECF0;
-        color: #1C1C1C;
+        background-color: #e6ecf0;
+        color: #1c1c1c;
         border-radius: 25px 25px 25px 0px;
         font-weight: normal;
         font-size: 15px;
         line-height: 20px;
         padding: 10px 15px 15px 15px;
+        overflow-y: auto;
+        word-wrap: break-word;
       }
     }
 
@@ -347,30 +360,30 @@ export default {
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
-  border-top: 1px solid #E6ECF0;
+  border-top: 1px solid #e6ecf0;
 
   input {
-    background-color: #E6ECF0;
-    border: 1px solid #E6ECF0;
+    background-color: #e6ecf0;
+    border: 1px solid #e6ecf0;
     border-radius: 50px;
     margin-right: 16px;
     font-weight: normal;
     font-size: 16px;
     line-height: 26px;
-    color: #1C1C1C;
+    color: #1c1c1c;
     padding-left: 16px;
     display: flex;
     flex-grow: 1;
 
     &::placeholder {
-      color: #92929D;
+      color: #92929d;
     }
   }
 
   .btn-send {
     height: 24px;
     width: 24px;
-    color: #FF6600;
+    color: #ff6600;
 
     &:hover {
       opacity: 0.75;

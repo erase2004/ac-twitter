@@ -73,34 +73,34 @@ import {
   timeFormatFilter
 } from '@/utils/mixins'
 
-const users = [
-  {
-    id: 1,
-    account: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-    name: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
-    avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
-    introduction: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    lastModified: new Date()
-  },
-  {
-    id: 2,
-    account: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
-    name: '',
-    avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
-    introduction:
-      'xxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxx zzzzzzzzzzzzzzzzzzzz',
-    lastModified: new Date()
-  },
-  {
-    id: 3,
-    account: 'cccccccccccccccccccccccccccccccccccccccc',
-    name: '',
-    avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
-    introduction:
-      'aaaaaaaaaaaaaaa bbbbbbbbbbbbbbb ccccccccccccccccccc ddddddddddddddd',
-    lastModified: new Date()
-  }
-]
+// const users = [
+//   {
+//     id: 1,
+//     account: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+//     name: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+//     avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
+//     introduction: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+//     lastModified: new Date()
+//   },
+//   {
+//     id: 2,
+//     account: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+//     name: '',
+//     avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
+//     introduction:
+//       'xxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxx zzzzzzzzzzzzzzzzzzzz',
+//     lastModified: new Date()
+//   },
+//   {
+//     id: 3,
+//     account: 'cccccccccccccccccccccccccccccccccccccccc',
+//     name: '',
+//     avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
+//     introduction:
+//       'aaaaaaaaaaaaaaa bbbbbbbbbbbbbbb ccccccccccccccccccc ddddddddddddddd',
+//     lastModified: new Date()
+//   }
+// ]
 
 export default {
   components: {
@@ -111,13 +111,14 @@ export default {
   mixins: [addPrefixFilter, emptyNameMethod, timeFormatFilter],
   data () {
     return {
-      users,
+      users: [],
       tempUser: {}
     }
   },
   sockets: {
     // 來自WebSocket的新訊息
-    userList (resp) {
+    listenUserData (resp) {
+      console.log(resp)
       this.users = resp
     }
   }
