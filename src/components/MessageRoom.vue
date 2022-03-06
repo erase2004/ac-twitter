@@ -302,7 +302,7 @@ export default {
     .message-area {
       display: flex;
       flex-direction: row;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       max-width: 415px;
 
       .avatar {

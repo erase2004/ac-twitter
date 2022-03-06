@@ -115,10 +115,10 @@ export default {
       tempUser: {}
     }
   },
-  methods: {
-    getUser (payload) {
-      this.tempUser = payload
-      console.log(payload)
+  sockets: {
+    // 來自WebSocket的新訊息
+    userList (resp) {
+      this.users = resp
     }
   }
 }
