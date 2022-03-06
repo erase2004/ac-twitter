@@ -5,7 +5,7 @@
       <slot />
     </section>
     <section
-      ref="chatroom"
+      ref="personalChatroom"
       class="message-container"
     >
       <div class="mt-auto">
@@ -13,18 +13,14 @@
           v-for="message in proccessedMessage"
           :key="message.id"
           class="message-block"
-          :class="{'server-message': message.type === 0, 'self-message': message.type === 1}"
+          :class="{
+            'server-message': message.type === 0,
+            'self-message': message.type === 1
+          }"
         >
-          <!-- 伺服器發的訊息 -->
-          <div
-            v-if="message.type === 0"
-            class="message"
-          >
-            {{ serverMessage(message) }}
-          </div>
           <!-- 自己發的訊息 -->
           <div
-            v-else-if="message.type === 1"
+            v-if="message.type === 1"
             class="self"
           >
             <div class="message">
@@ -80,8 +76,35 @@
 <script>
 import UserThumbnail from '@/components/UserThumbnail.vue'
 import { Toast } from '@/utils/helpers'
-import { timeFormatFilter, emptyNameMethod, inputValidationMethod } from '@/utils/mixins'
+import {
+  timeFormatFilter,
+  emptyNameMethod,
+  inputValidationMethod
+} from '@/utils/mixins'
 import { mapState } from 'vuex'
+
+const message = [
+  {
+    id: 6,
+    message: 'asdfasdfawef',
+    created_at: new Date(),
+    userData: {
+      avatar:
+        'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
+      id: 1
+    }
+  },
+  {
+    id: 7,
+    message: 'asdfasd23wqefawef',
+    created_at: new Date(),
+    userData: {
+      avatar:
+        'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
+      id: 2
+    }
+  }
+]
 
 export default {
   components: {
@@ -92,8 +115,19 @@ export default {
     return {
       messages: [],
       inputMessage: '',
-      isLoading: true
+      isLoading: true,
+      id: ''
     }
+  },
+  beforeRouteUpdate (to, from, next) {
+    const { id } = to.params
+    this.id = id
+    this.$socket.client.emit('createRoom', {
+      sendUserId: this.currentUser.id,
+      listenUserId: this.id
+    })
+    console.log('current:', this.currentUser.id, 'listen', this.id)
+    next()
   },
   sockets: {
     // WebSocket登入成功
@@ -120,7 +154,7 @@ export default {
       // 過濾掉重複id的message
 
       const idSet = new Set()
-      const messages = this.messages.filter(message => {
+      const messages = this.messages.filter((message) => {
         if (idSet.has(message.id)) {
           return false
         } else {
@@ -129,7 +163,7 @@ export default {
         }
       })
 
-      return messages.map(message => {
+      return messages.map((message) => {
         if (message.source === 'server') {
           // 伺服器發的訊息
           return {
@@ -157,33 +191,15 @@ export default {
   watch: {
     proccessedMessage () {
       this.$nextTick(function () {
-        var container = this.$refs.chatroom
+        var container = this.$refs.personalChatroom
         container.scrollTop = container.scrollHeight
       })
     }
   },
-  mounted () {
-    // 在component掛載後，對WebSocket進行登入
-    this.$socket.client.emit('login', { userId: this.currentUser.id })
-  },
-  beforeDestroy () {
-    console.log('before destory')
-    this.$socket.client.emit('logout', { userId: this.currentUser.id })
+  created () {
+    this.messages = message
   },
   methods: {
-    serverMessage (message) {
-      console.log(message)
-
-      const userName = (message.userData) ? this.emptyName(message.userData.name, message.userData.account) : this.emptyName(message.userData.name, message.userData.account)
-
-      if (message.message === 'join') {
-        return `${userName} 上線`
-      } else if (message.message === 'logout') {
-        return `${userName} 離線`
-      } else {
-        return ''
-      }
-    },
     sendMessage () {
       if (this.isLoading) return
 
@@ -203,10 +219,6 @@ export default {
       })
 
       this.inputMessage = ''
-    },
-    handler () {
-      this.$socket.client.emit('login', { userId: this.currentUser.id })
-      console.log('refresh website')
     }
   }
 }
@@ -226,7 +238,7 @@ export default {
   flex-wrap: nowrap;
   flex-shrink: 0;
   align-items: center;
-  border: 1px solid #E6ECF0;
+  border: 1px solid #e6ecf0;
 }
 
 .message-container {
@@ -237,6 +249,7 @@ export default {
   overflow-x: clip;
   overflow-y: auto;
   padding: 16px;
+  height: 100px;
 }
 
 .message-block {
@@ -247,7 +260,7 @@ export default {
     .message {
       display: inline-block;
       color: #657786;
-      background-color: #E5E5E5;
+      background-color: #e5e5e5;
       border-radius: 50px;
       font-weight: 500;
       font-size: 15px;
@@ -271,8 +284,8 @@ export default {
 
       .message {
         max-width: 400px;
-        background-color: #FF6600;
-        color: #FFFFFF;
+        background-color: #ff6600;
+        color: #ffffff;
         font-weight: normal;
         font-size: 15px;
         line-height: 20px;
@@ -311,8 +324,8 @@ export default {
       }
 
       .message {
-        background-color: #E6ECF0;
-        color: #1C1C1C;
+        background-color: #e6ecf0;
+        color: #1c1c1c;
         border-radius: 25px 25px 25px 0px;
         font-weight: normal;
         font-size: 15px;
@@ -347,30 +360,30 @@ export default {
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
-  border-top: 1px solid #E6ECF0;
+  border-top: 1px solid #e6ecf0;
 
   input {
-    background-color: #E6ECF0;
-    border: 1px solid #E6ECF0;
+    background-color: #e6ecf0;
+    border: 1px solid #e6ecf0;
     border-radius: 50px;
     margin-right: 16px;
     font-weight: normal;
     font-size: 16px;
     line-height: 26px;
-    color: #1C1C1C;
+    color: #1c1c1c;
     padding-left: 16px;
     display: flex;
     flex-grow: 1;
 
     &::placeholder {
-      color: #92929D;
+      color: #92929d;
     }
   }
 
   .btn-send {
     height: 24px;
     width: 24px;
-    color: #FF6600;
+    color: #ff6600;
 
     &:hover {
       opacity: 0.75;

@@ -13,7 +13,7 @@
 
 <style lang="scss" scoped>
 .user-list {
-  border-right: 1px solid #E6ECF0;
+  border-right: 1px solid #e6ecf0;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -21,7 +21,7 @@
 }
 
 .list-header {
-  border-bottom: 1px solid #E6ECF0;
+  border-bottom: 1px solid #e6ecf0;
   color: #171725;
   font-size: 24px;
   font-weight: bold;

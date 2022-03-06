@@ -9,9 +9,7 @@
 
       <!-- 使用者清單 -->
       <template v-slot:list>
-        <div
-          class="list-container"
-        >
+        <div class="list-container">
           <!-- router-link v-slot: https://router.vuejs.org/api/#router-link-s-v-slot，
                客製化router-link (可以用tag attribute，但未來會被遺棄，建議是用custom v-slot) -->
           <router-link
@@ -19,7 +17,7 @@
             :key="user.id"
             v-slot="{ navigate, isExactActive }"
             custom
-            :to="{name: 'direct-message-room', params: {id: user.id}}"
+            :to="{ name: 'direct-message-room', params: { id: user.id } }"
           >
             <div
               class="list-group cursor-pointer"
@@ -30,7 +28,11 @@
                 :initial-user="user"
                 class="avatar"
               />
-              <div class="user-info">
+              <div
+                class="user-info"
+                @click="tempUser = user"
+              >
+                <!-- 控制當前聊天室使用者顯示 -->
                 <div class="user">
                   <div class="name">
                     {{ emptyName(user.name, user.account) }}
@@ -54,8 +56,8 @@
     <router-view>
       <!-- 聊天室標題 -->
       <span class="user">
-        <div class="name">UserName</div>
-        <div class="account">@UserAccount</div>
+        <div class="name">{{ emptyName(tempUser.name, tempUser.account) }}</div>
+        <div class="account">{{ tempUser.account | addPrefix }}</div>
       </span>
     </router-view>
   </div>
@@ -65,7 +67,11 @@
 import UserThumbnail from '@/components/UserThumbnail.vue'
 import SiteNav from '@/components/SiteNav.vue'
 import ListNav from '@/components/ListNav.vue'
-import { addPrefixFilter, emptyNameMethod, timeFormatFilter } from '@/utils/mixins'
+import {
+  addPrefixFilter,
+  emptyNameMethod,
+  timeFormatFilter
+} from '@/utils/mixins'
 
 const users = [
   {
@@ -81,7 +87,8 @@ const users = [
     account: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
     name: '',
     avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
-    introduction: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxx zzzzzzzzzzzzzzzzzzzz',
+    introduction:
+      'xxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxx zzzzzzzzzzzzzzzzzzzz',
     lastModified: new Date()
   },
   {
@@ -89,7 +96,8 @@ const users = [
     account: 'cccccccccccccccccccccccccccccccccccccccc',
     name: '',
     avatar: 'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
-    introduction: 'aaaaaaaaaaaaaaa bbbbbbbbbbbbbbb ccccccccccccccccccc ddddddddddddddd',
+    introduction:
+      'aaaaaaaaaaaaaaa bbbbbbbbbbbbbbb ccccccccccccccccccc ddddddddddddddd',
     lastModified: new Date()
   }
 ]
@@ -103,7 +111,14 @@ export default {
   mixins: [addPrefixFilter, emptyNameMethod, timeFormatFilter],
   data () {
     return {
-      users
+      users,
+      tempUser: {}
+    }
+  },
+  methods: {
+    getUser (payload) {
+      this.tempUser = payload
+      console.log(payload)
     }
   }
 }
@@ -121,7 +136,7 @@ export default {
     line-height: 26px;
   }
   .account {
-    color: #6C757D;
+    color: #6c757d;
     font-weight: normal;
     font-size: 16px;
     line-height: 26px;
@@ -131,7 +146,7 @@ export default {
 // 使用者清單
 .list-group {
   align-items: center;
-  border-bottom: 1px solid #E6ECF0;
+  border-bottom: 1px solid #e6ecf0;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -139,7 +154,7 @@ export default {
   overflow: hidden;
 
   &.active {
-    border-right: 2px solid #FF6600;
+    border-right: 2px solid #ff6600;
     padding-right: 14px;
   }
 }
@@ -176,7 +191,7 @@ export default {
     }
 
     .account {
-      color: #6C757D;
+      color: #6c757d;
       flex-grow: 1;
       flex-shrink: 1;
       font-size: 16px;
@@ -189,7 +204,7 @@ export default {
   }
 
   .introduction {
-    color: #6C757D;
+    color: #6c757d;
     font-weight: normal;
     font-size: 14px;
     line-height: 22px;
