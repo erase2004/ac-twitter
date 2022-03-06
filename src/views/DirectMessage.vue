@@ -151,7 +151,8 @@ export default {
     // 來自WebSocket的新訊息
     userList (resp) {
       console.log('userList', resp)
-      this.users = resp.filter(item => item)
+      // 過濾沒有資料的user
+      this.users = resp.filter(item => item.id)
     },
     listenUserData (resp) {
       console.log('listenUserData', resp)
