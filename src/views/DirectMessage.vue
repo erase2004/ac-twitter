@@ -117,7 +117,7 @@ export default {
   },
   sockets: {
     // 來自WebSocket的新訊息
-    listenUserData (resp) {
+    userList (resp) {
       console.log(resp)
       this.users = resp
     }
