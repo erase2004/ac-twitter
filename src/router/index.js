@@ -152,7 +152,7 @@ const routes = [
     component: () => import('@/views/DirectMessage'),
     children: [
       {
-        path: 'message',
+        path: '',
         name: 'direct-message-room',
         component: () => import('@/components/PersonalMessage')
       }

@@ -83,28 +83,28 @@ import {
 } from '@/utils/mixins'
 import { mapState } from 'vuex'
 
-const message = [
-  {
-    id: 6,
-    message: 'asdfasdfawef',
-    created_at: new Date(),
-    userData: {
-      avatar:
-        'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
-      id: 1
-    }
-  },
-  {
-    id: 7,
-    message: 'asdfasd23wqefawef',
-    created_at: new Date(),
-    userData: {
-      avatar:
-        'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
-      id: 2
-    }
-  }
-]
+// const message = [
+//   {
+//     id: 6,
+//     message: 'asdfasdfawef',
+//     created_at: new Date(),
+//     userData: {
+//       avatar:
+//         'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
+//       id: 1
+//     }
+//   },
+//   {
+//     id: 7,
+//     message: 'asdfasd23wqefawef',
+//     created_at: new Date(),
+//     userData: {
+//       avatar:
+//         'https://loremflickr.com/320/240/woman/?random=25.130310387068057',
+//       id: 2
+//     }
+//   }
+// ]
 
 export default {
   components: {
@@ -197,7 +197,7 @@ export default {
     }
   },
   created () {
-    this.messages = message
+    // this.messages = message
   },
   methods: {
     sendMessage () {

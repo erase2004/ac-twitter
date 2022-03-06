@@ -22,8 +22,12 @@
             @click.native.stop.prevent="$router.go(-1)"
           />
           <span class="simple-info">
-            <div class="user-name">{{ emptyName(user.name, user.account) }}</div>
-            <div class="tweet-count">{{ user.tweetAmount | numberFormat }} 推文</div>
+            <div class="user-name">
+              {{ emptyName(user.name, user.account) }}
+            </div>
+            <div class="tweet-count">
+              {{ user.tweetAmount | numberFormat }} 推文
+            </div>
           </span>
         </div>
         <main class="profile">
@@ -53,10 +57,15 @@
               </button>
             </template>
             <template v-else>
-              <icon
-                icon-name="email"
-                class="btn-control-outline btn-icon  cursor-pointer"
-              />
+              <router-link
+                :to="{ name: 'direct-message', params: { id: user.id } }"
+                @click.native="submitId(user)"
+              >
+                <icon
+                  icon-name="email"
+                  class="btn-control-outline btn-icon cursor-pointer"
+                />
+              </router-link>
               <icon
                 v-if="!user.notification"
                 icon-name="notification"
@@ -66,7 +75,7 @@
               <icon
                 v-else
                 icon-name="notification-checked"
-                class="btn-control btn-icon  cursor-pointer"
+                class="btn-control btn-icon cursor-pointer"
                 @click.native.stop.prevent="offNotification(user.id)"
               />
               <FollowControlButton
@@ -87,13 +96,13 @@
             </div>
             <div class="user-statistic">
               <router-link
-                :to="{name: 'followings', params: {id: user.id}}"
+                :to="{ name: 'followings', params: { id: user.id } }"
                 class="user-following"
               >
                 {{ user.following | numberFormat }} 個<em>跟隨中</em>
               </router-link>
               <router-link
-                :to="{name: 'followers', params: {id: user.id}}"
+                :to="{ name: 'followers', params: { id: user.id } }"
                 class="user-follower"
               >
                 {{ user.follower | numberFormat }} 位<em>跟隨者</em>
@@ -114,7 +123,11 @@ import SiteNav from '@/components/SiteNav.vue'
 import RecommendedList from '@/components/RecommendedList.vue'
 import FollowControlButton from '@/components/FollowControlButton.vue'
 import UserNav from '@/components/UserNav.vue'
-import { emptyNameMethod, addPrefixFilter, numberFormatFilter } from '@/utils/mixins'
+import {
+  emptyNameMethod,
+  addPrefixFilter,
+  numberFormatFilter
+} from '@/utils/mixins'
 import UserProfileModal from '@/components/UserProfileModal.vue'
 import { mapState } from 'vuex'
 import usersAPI from '@/apis/users'
@@ -244,6 +257,13 @@ export default {
     updateProfile () {
       this.show = false
       store.dispatch('fetchCurrentUser')
+    },
+    submitId (user) {
+      this.$socket.client.emit('createRoom', {
+        sendUserId: this.currentUser.id,
+        listenUserId: this.id
+      })
+      console.log('current:', this.currentUser.id, 'listen', user.id)
     }
   }
 }
@@ -257,7 +277,7 @@ export default {
 }
 
 .page-control {
-  border-bottom: 1px solid #E6ECF0;
+  border-bottom: 1px solid #e6ecf0;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -294,8 +314,8 @@ export default {
     }
   }
   .user-avatar {
-    background-color: #C4C4C4;
-    border: 4px solid #FFFFFF;
+    background-color: #c4c4c4;
+    border: 4px solid #ffffff;
     border-radius: 50%;
     bottom: 0px;
     height: 140px;
