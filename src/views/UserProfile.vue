@@ -258,10 +258,11 @@ export default {
       this.show = false
       store.dispatch('fetchCurrentUser')
     },
+    // 傳送ID回去socket.io
     submitId (user) {
       this.$socket.client.emit('createRoom', {
         sendUserId: this.currentUser.id,
-        listenUserId: this.id
+        listenUserId: user.id
       })
       console.log('current:', this.currentUser.id, 'listen', user.id)
     }
