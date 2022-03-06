@@ -291,8 +291,6 @@ export default {
         line-height: 20px;
         border-radius: 25px 25px 0px 25px;
         padding: 10px 15px 15px 15px;
-        overflow-y: auto;
-        word-wrap: break-word;
       }
 
       .time {
