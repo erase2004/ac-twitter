@@ -130,23 +130,23 @@ export default {
     next()
   },
   sockets: {
-    // // WebSocket登入成功
-    // loginSuccess (resp) {
-    //   console.log('login success')
-    //   console.log(resp)
-    //   this.isLoading = false
-    //   this.messages = [...resp.messageData]
-    // },
-    // // WebSocket斷線
-    // disconnect (resp) {
-    //   console.log('socket disconnected')
-    //   console.log(resp)
-    //   this.isLoading = true
-    // },
-    // // 來自WebSocket的新訊息
-    // message (resp) {
-    //   this.messages = [...this.messages, resp]
-    // }
+    // WebSocket登入成功
+    loginSuccess (resp) {
+      console.log('login success')
+      console.log(resp)
+      this.isLoading = false
+      this.messages = [...resp.messageData]
+    },
+    // WebSocket斷線
+    disconnect (resp) {
+      console.log('socket disconnected')
+      console.log(resp)
+      this.isLoading = true
+    },
+    // 來自WebSocket的新訊息
+    message (resp) {
+      this.messages = [...this.messages, resp]
+    }
   },
   computed: {
     ...mapState(['currentUser']),
