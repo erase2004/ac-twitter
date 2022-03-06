@@ -79,7 +79,7 @@ import { Toast } from '@/utils/helpers'
 import {
   timeFormatFilter,
   emptyNameMethod,
-  inputValidationMethod
+  inputValidationMethod,
 } from '@/utils/mixins'
 import { mapState } from 'vuex'
 
@@ -108,49 +108,49 @@ import { mapState } from 'vuex'
 
 export default {
   components: {
-    UserThumbnail
+    UserThumbnail,
   },
   mixins: [timeFormatFilter, emptyNameMethod, inputValidationMethod],
-  data () {
+  data() {
     return {
       messages: [],
       inputMessage: '',
       isLoading: true,
-      id: ''
+      id: '',
     }
   },
-  beforeRouteUpdate (to, from, next) {
+  beforeRouteUpdate(to, from, next) {
     const { id } = to.params
     this.id = id
     this.$socket.client.emit('createRoom', {
       sendUserId: this.currentUser.id,
-      listenUserId: this.id
+      listenUserId: this.id,
     })
     console.log('current:', this.currentUser.id, 'listen', this.id)
     next()
   },
   sockets: {
     // WebSocket登入成功
-    loginSuccess (resp) {
+    loginSuccess(resp) {
       console.log('login success')
       console.log(resp)
       this.isLoading = false
       this.messages = [...resp.messageData]
     },
     // WebSocket斷線
-    disconnect (resp) {
+    disconnect(resp) {
       console.log('socket disconnected')
       console.log(resp)
       this.isLoading = true
     },
     // 來自WebSocket的新訊息
-    message (resp) {
+    message(resp) {
       this.messages = [...this.messages, resp]
-    }
+    },
   },
   computed: {
     ...mapState(['currentUser']),
-    proccessedMessage () {
+    proccessedMessage() {
       // 過濾掉重複id的message
 
       const idSet = new Set()
@@ -168,7 +168,7 @@ export default {
           // 伺服器發的訊息
           return {
             ...message,
-            type: 0
+            type: 0,
           }
         }
 
@@ -176,31 +176,31 @@ export default {
           // 自己發的訊息
           return {
             ...message,
-            type: 1
+            type: 1,
           }
         }
 
         // 別人發的訊息
         return {
           ...message,
-          type: 2
+          type: 2,
         }
       })
-    }
+    },
   },
   watch: {
-    proccessedMessage () {
+    proccessedMessage() {
       this.$nextTick(function () {
         var container = this.$refs.personalChatroom
         container.scrollTop = container.scrollHeight
       })
-    }
+    },
   },
-  created () {
+  created() {
     // this.messages = message
   },
   methods: {
-    sendMessage () {
+    sendMessage() {
       if (this.isLoading) return
 
       const { status, message } = this.checkInstantMessage(this.inputMessage)
@@ -208,19 +208,19 @@ export default {
       if (status === false) {
         return Toast.fire({
           icon: 'warning',
-          title: message
+          title: message,
         })
       }
 
       this.$socket.client.emit('message', {
         source: 'user',
         userId: this.currentUser.id,
-        message: this.inputMessage
+        message: this.inputMessage,
       })
 
       this.inputMessage = ''
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -291,6 +291,8 @@ export default {
         line-height: 20px;
         border-radius: 25px 25px 0px 25px;
         padding: 10px 15px 15px 15px;
+        overflow-y: auto;
+        word-wrap: break-word;
       }
 
       .time {
